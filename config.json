@@ -1,0 +1,8 @@
+{
+  "paths": {
+    "output": "output/",
+    "batch": "batch/",
+    "snapshot": "snapshot/",
+    "db": "db/jobs.duckdb"
+  }
+}
