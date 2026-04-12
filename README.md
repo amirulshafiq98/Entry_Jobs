@@ -31,7 +31,7 @@ This pipeline automates the full lifecycle of job market data — from raw API e
   - **Bronze:** Raw cleaned CSV loaded directly into DuckDB.
   - **Silver:** Transformations involving skills extraction, timeframes, and active job months.
   - **Gold:** Aggregated outputs specifically formatted for analysis and graphing.
-- **Snapshot Logic** — Automatically generates a timestamped Parquet file after each run to preserve historical state.
+- **Snapshot Logic** — Automatically generates a timestamped Parquet file after each run to preserve the historical state.
 
 ---
 
@@ -51,7 +51,9 @@ docker run --env-file .env -v "${PWD}:/app" job-pipeline
 
 This container will:
 - Scrape new job listings.
-- Clean and append to the master dataset.
+- Append to an ever-expanding dataset.
+- Create a snapshot of previous collated datasets.
+- Generate a cleaned master file.
 - Run the DuckDB layer to update the analytical database.
 - Generate a `graph_ready.csv` and a Parquet snapshot.
 
@@ -68,7 +70,8 @@ python/
 db/
 └── jobs.duckdb          # Local analytical database
 output/
-├── scraped_jobs.csv     # Master record
+├── cleaned_jobs.csv     # Master record
+├── scraped_jobs.csv     # Collation of all jobs scraped
 └── graph_ready.csv      # Final visual-ready output
 config.json              # Path and tool configurations
 .env                     # API credentials and URLs
@@ -81,7 +84,8 @@ Dockerfile               # Environment setup
 
 | File | Purpose |
 |---|---|
-| `scraped_jobs.csv` | Master dataset containing all historical scraped entries. |
+| `cleaned_jobs.csv` | Cleaned master file of all jobs based on scraped entries. |
+| `scraped_jobs.csv` | Collated dataset containing all historical records. |
 | `jobs.duckdb` | Persistent database file for SQL-based analysis. |
 | `graph_ready.csv` | Aggregated Gold-layer output used directly for visualisations. |
 | `snapshot_*.parquet` | Historical versions stored in compressed format. |
